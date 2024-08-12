@@ -1,11 +1,11 @@
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
     id 'com.palantir.git-version' version '0.15.0'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 archivesBaseName = project.archives_base_name
 version = '0.1.5'
@@ -24,7 +24,25 @@ try {
 } catch (ex) {
     println ex
 }
-
+sourceSets {
+    create("testMod") {
+        compileClasspath += main.getCompileClasspath()
+        runtimeClasspath += main.getRuntimeClasspath()
+    }
+}
+loom {
+    runs {
+        create("gametest") {
+            server()
+            name("Game Test")
+            ideConfigGenerated(true)
+            source(sourceSets.getByName("testMod"))
+            vmArg("-Dfabric-api.gametest")
+            runDir("build/test")
+        }
+    }
+}
+tasks.getByName("test").dependsOn("runGameTest")
 repositories {
     maven {
         url = "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -48,9 +66,7 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
-    modImplementation("net.kyori:adventure-platform-fabric:5.5.0-SNAPSHOT") {
-        exclude group: "ca.stellardrift", module: "colonel"
-    }
+
 }
 
 processResources {
@@ -93,6 +109,7 @@ publishing {
             }
         }
     }
+
 
     // select the repositories you want to publish to
     repositories {
