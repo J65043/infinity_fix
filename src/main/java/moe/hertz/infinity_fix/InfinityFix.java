@@ -16,9 +16,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import java.util.EventListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameRules.BooleanRule;
+import net.minecraft.world.GameRules;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 
 public class InfinityFix implements net.fabricmc.api.ModInitializer {
 
+    public static final GameRules.Key<BooleanRule> ALLOW_CROSSBOW_INFINITY_MENDING = GameRuleRegistry.register("infinity-fix:CrossbowMending", GameRules.Category.PLAYER,GameRuleFactory.createBooleanRule(true));
     public static ServerWorld currentWorld;
     @Override
     public void onInitialize() {

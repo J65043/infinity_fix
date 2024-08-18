@@ -79,5 +79,30 @@ public class TestInfinityFix {
         context.complete();
 
     }
+    @GameTest(templateName = TEMPLATE,tickLimit =  200)
+    public void testInfinityWithMendingCrossbowFalse(TestContext context)
+    {
+        TestUtil.runCommand(context,"gamerule infinity-fix:CrossbowMending false");
+        var world = context.getWorld();
+        DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
+        RegistryEntry<Enchantment> infinity = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).getEntry(Identifier.ofVanilla("infinity")).get();
+        RegistryEntry<Enchantment> mending = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).getEntry(Identifier.ofVanilla("mending")).get();
+
+        var bow = Items.CROSSBOW.getDefaultStack();
+        bow.addEnchantment(infinity,1);
+        var IsMendingCompat = bow.canBeEnchantedWith(mending, EnchantingContext.ACCEPTABLE);
+        System.out.println("IsMendingCompat"+ IsMendingCompat);
+        var bow2 = Items.CROSSBOW.getDefaultStack();
+        bow2.addEnchantment(mending,1);
+        context.assertFalse(IsMendingCompat,"Gamerule prevents mending from being added");
+
+        var IsInfinityCompat = bow2.canBeEnchantedWith(infinity,EnchantingContext.ACCEPTABLE);
+        System.out.println("IsMendingCompat"+ IsInfinityCompat);
+        context.assertFalse(IsInfinityCompat,"Infinity is unable to be added...");
+
+        context.complete();
+
+    }
+
 }
 
